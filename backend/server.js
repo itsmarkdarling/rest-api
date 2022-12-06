@@ -12,7 +12,8 @@ const app = express()
 app.use(express.json())
 app.use(express.urlencoded({ extended: false }))
 
-app.use('/api/entries', require('./routes/entriesRoutes'))
+app.use('/api/entries', require('./routes/entryRoutes'))
+app.use('/api/users', require('./routes/userRoutes'))
 
 app.use(errorHandler)
 
