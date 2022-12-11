@@ -1,22 +1,60 @@
-import { useState, useEffect } from 'react'
-import { Paper, Typography, TextField, IconButton } from '@mui/material'
+import { useState, useEffect } from "react";
+import { useSelector, useDispatch } from "react-redux";
+import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
+import { register, reset, login, logout } from "../features/auth/authSlice";
+import { Paper, Typography, TextField, IconButton } from "@mui/material";
 import LoginIcon from "@mui/icons-material/Login";
+import Spinner from '../components/Spinner'
 
 function Login() {
-    const [formData, setFormData] = useState( {
-        email: '',
-        password: '',
-    })
+  const [formData, setFormData] = useState({
+    email: "",
+    password: "",
+  });
 
-const { email, password } = formData
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
 
-const onChange = (e) => {
+  const { user, isLoading, isError, isSuccess, message } = useSelector(
+    (state) => state.auth
+  );
+
+  useEffect(() => {
+    if (isError) {
+        toast.error(message)
+    }
+
+    if (isSuccess || user) {
+        navigate('/')
+    }
+
+    dispatch(reset())
+  }, [user, isError, isSuccess, message, navigate, dispatch])
+
+  const { email, password } = formData;
+
+  const onChange = (e) => {
     setFormData((prevState) => ({
-        ...prevState,
-        [e.target.name]: e.target.value
-    }))
-}
+      ...prevState,
+      [e.target.name]: e.target.value,
+    }));
+  };
 
+  const onSubmit = (e) => {
+    e.preventDefault()
+
+    const userData = {
+      email,
+      password,
+    }
+
+    dispatch(login(userData))
+  }
+
+  if (isLoading) {
+    return <Spinner />
+  }
 
   return (
     <>
@@ -25,7 +63,9 @@ const onChange = (e) => {
         <br />
         Login
       </h1>
-      <Typography variant="h6" gutterBottom className="center">Login to begin recording entries</Typography>
+      <Typography variant="h6" gutterBottom className="center">
+        Login to begin recording entries
+      </Typography>
       <Paper className="form">
         <TextField
           size="small"
@@ -41,7 +81,7 @@ const onChange = (e) => {
           value={password}
           onChange={onChange}
         ></TextField>
-        <IconButton>Submit</IconButton>
+        <IconButton onClick={onSubmit}>Submit</IconButton>
       </Paper>
     </>
   );

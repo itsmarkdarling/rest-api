@@ -1,11 +1,22 @@
 import { AppBar, Toolbar, Typography, IconButton } from "@mui/material";
-import MenuIcon from "@mui/icons-material/Menu";
 import LoginIcon from "@mui/icons-material/Login";
 import LogoutIcon from "@mui/icons-material/Logout";
-import HowToRegIcon from '@mui/icons-material/HowToReg';
-import { Link } from "react-router-dom";
+import HowToRegIcon from "@mui/icons-material/HowToReg";
+import { Link, useNavigate } from "react-router-dom";
+import { useSelector, useDispatch } from "react-redux";
+import { logout, reset } from "../features/auth/authSlice";
 
 function Header() {
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const { user } = useSelector((state) => state.auth);
+
+  const onLogout = () => {
+    dispatch(logout())
+    dispatch(reset())
+    navigate('/')
+  }
+
   return (
     <div className="container">
       <AppBar className="appbar" position="static" elevation={10}>
@@ -16,13 +27,28 @@ function Header() {
             color="inherit"
             aria-label="menu"
             sx={{ mr: 2 }}
-          >
-          </IconButton>
+          ></IconButton>
           <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-            Entries
+            <a href="/" className="link icon">
+              Entries
+            </a>
           </Typography>
-          <HowToRegIcon className="icon" />
-          <LoginIcon className="icon" color="inherit"></LoginIcon>
+          {user ? (
+                <LogoutIcon
+                  className="icon"
+                  color="inherit"
+                  onClick={onLogout}
+                />
+          ) : (
+            <>
+              <a href="/register" className="link icon">
+                <HowToRegIcon />
+              </a>
+              <a href="/login" className="link icon">
+                <LoginIcon className="icon" color="inherit" />
+              </a>
+            </>
+          )}
         </Toolbar>
       </AppBar>
     </div>

@@ -39,16 +39,14 @@ const updateEntry = asyncHandler(async (req, res) => {
     throw new Error("Entry not found");
   }
 
-  const user = await User.findById(req.user.id);
-
   // Check for user
-  if (!user) {
+  if (!req.user) {
     res.status(401);
     throw new Error("User not found");
   }
 
   // Ensure logged in user matches entry user
-  if (entry.user.toString() !== user.id) {
+  if (entry.user.toString() !== req.user.id) {
     res.status(401);
     throw new Error("User not authorized");
   }
@@ -65,7 +63,6 @@ const updateEntry = asyncHandler(async (req, res) => {
 // access: Private
 const deleteEntry = asyncHandler(async (req, res) => {
   const entry = await Entry.findById(req.params.id);
-  const user = await User.findById(req.user.id);
 
   if (!entry) {
     res.status(400);
@@ -73,13 +70,13 @@ const deleteEntry = asyncHandler(async (req, res) => {
   }
 
    // Check for user
-   if (!user) {
+   if (!req.user) {
     res.status(401);
     throw new Error("User not found");
   }
 
   // Ensure logged in user matches entry user
-  if (entry.user.toString() !== user.id) {
+  if (entry.user.toString() !== req.user.id) {
     res.status(401);
     throw new Error("User not authorized");
   }
